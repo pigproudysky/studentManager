@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nico.student.mapper.StudentMapper">
+
+	<sql id="comm">
+		id,sn,name,password,clazz_id,sex,mobile,qq,photo
+	</sql>
+	<resultMap type="com.nico.student.bean.Student" id="StudentMapper"/>
+	
+	<select id="login" resultMap="StudentMapper">
+		SELECT
+		<include refid="comm"/>
+		FROM s_student
+		WHERE name = #{name}
+	</select>
+	
+	<select id="getAll" resultMap="StudentMapper">
+		SELECT
+		<include refid="comm"/>
+		FROM s_student 
+		<where>
+			name = #{name}
+		</where>
+		LIMIT #{page},#{limit}
+	</select>
+	
+	<select id="getAllCount" resultType="int">
+		SELECT COUNT(id) AS resCount FROM s_student
+		<where>
+			name = #{name}
+		</where>
+	</select>
+	
+	<update id="add">
+		INSERT INTO s_student 
+		(sn,name,password,clazz_id,sex,mobile,qq) 
+		VALUES 
+		(#{sn},#{name},#{password},#{clazz_id},#{sex},#{mobile},#{qq})
+	</update>
+	
+	<update id="edit">
+		UPDATE s_student 
+		SET name=#{name},password=#{password},clazz_id=#{clazz_id},sex=#{sex},mobile=#{mobile},qq=#{qq}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getCount" resultType="int">
+		SELECT COUNT(id) FROM s_student
+	</select>
+	
+	<select id="checkName" resultMap="StudentMapper">
+		SELECT * FROM s_student WHERE name = #{name}
+	</select>
+	
+</mapper>

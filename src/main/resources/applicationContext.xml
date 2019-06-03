@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<!-- 配置包扫描 -->
+	<context:component-scan base-package="com.nico.student" />
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		destroy-method="close">
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://119.3.225.180:3306/nico_student_web" />
+		<property name="filters" value="stat" />
+	</bean>
+	<!-- 配置myabatis的sqlSession归spring管理 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!--<property name="mapperLocations" value="classpath:com/nico/student/mapper/*Mapper.xml" />-->
+		<property name="mapperLocations" value="classpath*:mapper/*Mapper.xml" />
+		<property name="typeAliasesPackage" value="com.nico.student.bean" />
+		<property name="configLocation" value="classpath:mybatis.xml" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.nico.student.mapper" />
+	</bean>
+	
+	<!-- 配置事务管理者 -->
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 配置事务管理模式,注解管理事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	
+	<!-- 配置shiro的认证授权域归spring管理 -->
+	<bean id="myRealm" class="com.nico.student.utils.MyRealm" />
+
+	<!-- 配置spring管理shiro的安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="myRealm" />
+	</bean>
+	<!-- 配置shiro的声明周期归spring管理 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+
+	<!-- 配置shiro ini配置中的认证资源归spring管理 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<property name="filterChainDefinitions">
+			<value>
+				/load/**=anon
+				/stu/login=anon
+				/stu/add=anon
+				/clazz/**=anon
+				/**=authc
+			</value>
+		</property>
+	</bean>
+
+
+</beans>

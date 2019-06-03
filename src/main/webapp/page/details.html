@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>积木课件</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" href="../load/static/img/logo.ico" type="image/x-icon" />
+	<link rel="stylesheet" href="../load/res/layui/css/layui.css">
+	<link rel="stylesheet" href="../load/res/static/css/mian.css">
+	<script src="../load/res/layui/layui.js"></script>
+<style type="text/css">
+	#logoP{
+		font-size: 20px;
+		font-weight: bold;
+		color: white;
+	}
+	#item{
+		margin-top: 20px;
+	}
+	#demoDiv{
+		margin-top: -238px;
+	}
+	#image{
+		width: 100%;
+		height:720px;
+		text-align: center;
+	}
+
+</style>
+</head>
+<body class="lay-blog">
+<script>
+	function GetQueryString(name)
+	{
+		var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		var r = window.location.search.substr(1).match(reg);
+		if(r!=null)return  unescape(r[2]); return null;
+	}
+	layui.use(['layer', 'jquery','form','carousel'], function(){
+		var layer = layui.layer;
+		var $ = layui.jquery;
+		var form = layui.form;
+		var carousel = layui.carousel;
+		var id = GetQueryString("fid");
+		var file;
+
+
+
+
+
+		$("#down").click(function(){
+			window.location.href = "../file/download?id="+id;
+		});
+
+		$(function(){
+			$.post('../file/getOne',{'fid':id},function(data){
+				file = data;
+				$('#item').append('<div id="file-div"><div style="margin-top: 30px" class="item-box  layer-photos-demo1 layer-photos-demo"><h3>'+'<a href="javascript:void(0)">'+data.prefix+'</a></h3><h5>&nbsp;&nbsp;'
+						+'<span>课件类别:&nbsp;<span class="layui-badge layui-bg-green">'+data.name+'</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+						+'上传于:<span>'+data.cdate+'</span>&nbsp;&nbsp;</h5>&nbsp;&nbsp;'
+						+'<p>'+data.desc+'</p>'
+						+'<sapn>销售数量:&nbsp;&nbsp;'+data.sale_number+'</span>&nbsp;&nbsp;&nbsp;'
+						+'<i class="layui-icon layui-icon-face-smile" style="font-size: 30px; color: #1E9FFF;"></i>售价:&nbsp;&nbsp;&nbsp;'+data.price+''
+						+'</div><hr>');
+				if(data.billFlag == 1){
+					$('#buy').prop("type","hidden");
+				}else{
+					$('#down').prop("type","hidden");
+				}
+				if(data.billFlag == 1){
+					var num = data.imageNum;
+					for(var i=1;i<=num;++i){
+						var str= "/image"+"/"+data.prefix +"/"+ i+".png";
+						$('#imageDiv').append('<div><img id="image" src="'+str+'"/></div>');
+					}
+				}else{
+					var str2= "/image"+"/"+data.prefix + "/";
+					$('#imageDiv').append('<div><img id="image" src="'+str2+'1.png"/></div>');
+					$('#imageDiv').append('<div><img id="image" src="'+str2+'2.png"/></div>');
+					$('#imageDiv').append('<div><img id="image" src="'+str2+'3.png"/></div>');
+				}
+				carousel.render({
+					elem: '#test1'
+					,width: '100%'
+					,height: '750px'
+					,arrow: 'always'
+				});
+			});
+		});
+
+		$("#buy").click(function(){
+			layer.confirm('是否要购买?', {icon: 3, title:'提示'}, function(index){
+				$.post('../acc/buy',{'fid':file.id},function(flag){
+					if(1 == flag){
+						layer.msg('购买成功', {icon: 6});
+						window.location.assign("./temp.html?fid="+file.id);
+					}else if(-1 == flag){
+						layer.msg('账户余额不足!', {
+							offset: 't',
+							anim: 6
+						});
+					}else if(0 == flag){
+						layer.msg('购买失败!', {
+							offset: 't',
+							anim: 6
+						});
+					}
+				})
+			});
+
+		});
+
+
+
+
+	});
+</script>
+
+
+		<div class="header" style="background-color: black;">
+			<div class="header-wrap">
+				<h1 class="logo pull-left">
+					<a href="./index.html">
+						<p id="logoP">&nbsp;&nbsp;&nbsp;&nbsp;积&nbsp;木&nbsp;课&nbsp;件&nbsp;</p>
+					</a>
+				</h1>
+				<form class="layui-form blog-seach pull-left" action="">
+					<div class="layui-form-item blog-sewrap">
+					    <div class="layui-input-block blog-sebox">
+					    </div>
+					</div>
+				</form>
+				<div class="blog-nav pull-right">
+
+				</div>
+				<div class="mobile-nav pull-right" id="mobile-nav">
+					<a href="javascript:;">
+						<i class="layui-icon layui-icon-more"></i>
+					</a>
+				</div>
+			</div>
+			<ul class="pop-nav" id="pop-nav">
+				<li><a href="./index.jsp">首页</a></li>
+			</ul>
+		</div>
+		<div class="container-wrap">
+			<div class="container container-message container-details">
+					<div class="contar-wrap">
+						<div id="item" class="item">
+							
+						</div>	
+						<a name="comment"> </a>
+						<div class="comt layui-clear" id="send-post">
+							<input type="button" class="layui-btn layui-btn-norma" id="down" value="下载">
+							<input type="button" class="layui-btn layui-btn-norma" id="buy" value="购买">
+						</div>
+						<div id="LAY-msg-box">
+							<div id="big-item" class="info-item">
+								
+							</div>			
+						</div>
+					</div>
+			</div>
+		</div>
+	<div id="demoDiv">
+	<div class="layui-carousel" id="test1">
+		<div carousel-item id="imageDiv">
+
+		</div>
+	</div>
+	</div>
+
+</div>
+
+
+		<div class="footer" id="downDiv">
+			<p>
+				<span>&copy; 2019</span>
+				<span><a href="" target="_blank"></a></span>
+				<span>llq</span>
+			</p>
+			<p><span>Copyright &copy;By 太原科技大学计算机科学与技术学院2015级毕设</span></p>
+		</div>
+		<script type="text/html" id="sale-view">
+			<form class="layui-form" action="" lay-filter="sale-form">
+				<div class="layui-form-item">
+					<label class="layui-form-label">课件价格</label>
+					<div class="layui-input-inline">
+						<input type="text" name="price" required lay-verify="required"  autocomplete="off" class="layui-input"  readonly="readonly">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">账户余额</label>
+					<div class="layui-input-inline">
+						<input type="text" name="userPrice" required lay-verify="required"  autocomplete="off" class="layui-input" readonly="readonly">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="sale-form-btn">确认购买</button>
+					</div>
+				</div>
+			</form>
+		</script>
+
+
+</body>
+</html>

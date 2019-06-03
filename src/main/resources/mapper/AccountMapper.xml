@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nico.student.mapper.AccountMapper">
+
+	<select id="getAll" resultType="com.nico.student.bean.Account">
+		SELECT * FROM s_account
+	</select>
+
+	<select id="getOne" resultType="com.nico.student.bean.Account">
+		SELECT * FROM s_account WHERE sid = #{sid}
+	</select>
+
+	<insert id="addAccount">
+		INSERT INTO s_account (amount,sid,integral) VALUES (#{amount},#{sid},#{integral})
+	</insert>
+
+	<update id="update">
+		UPDATE s_account SET amount = #{amount},integral = #{integral} WHERE sid = #{sid}
+	</update>
+
+	<update id="buy">
+		UPDATE s_account SET amount = #{amount} WHERE sid = #{sid}
+	</update>
+
+	<update id="download">
+		UPDATE s_account SET integral = #{integral} WHERE sid = #{sid}
+	</update>
+
+
+
+
+
+
+</mapper>

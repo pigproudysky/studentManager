@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nico.student.mapper.FileMapper">
+<!--3.ok这里虽然有用到但是和类型无关，现在去相应的mapper.java里看-->
+	<sql id="wheres">
+			<if test="tid != null and 0 != tid">
+				AND type_id = #{tid}
+			</if>
+			<if test="prefix != null">
+				AND prefix like '%${prefix}%'
+			</if>
+	</sql>
+	
+	<select id="getAll" resultType="com.nico.student.bean.File">
+		SELECT * FROM s_file
+		WHERE 1 = 1
+		<include refid="wheres"/>
+		
+	</select>
+	<select id="getCount" resultType="Integer">
+		SELECT COUNT(id) FROM s_file
+	</select>
+	
+	<select id="getMyCount" resultType="int">
+		SELECT COUNT(f.id) FROM s_file f LEFT JOIN s_bill b ON f.id = b.fid WHERE b.sid = #{sid}
+	</select>
+
+	<select id="getOneById" resultType="com.nico.student.bean.File">
+		SELECT * FROM s_file WHERE id = #{id}
+	</select>
+
+	<update id="buy">
+		UPDATE s_file SET sale_number = #{sale_number} WHERE id = #{id}
+	</update>
+	
+	<select id="getHeat" resultType="com.nico.student.bean.File">
+		SELECT * FROM s_file ORDER BY sale_number DESC LIMIT 0,5
+	</select>
+	
+</mapper>
